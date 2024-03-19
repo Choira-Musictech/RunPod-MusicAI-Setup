@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, emit
 from scipy.io import wavfile
 import numpy as np
 import os, re, json, sys, queue, threading, uuid, logging
-import torch, torchaudio, pathlib
+import pathlib
 from audiocraft.models import MusicGen
 from operator import itemgetter
 import librosa
