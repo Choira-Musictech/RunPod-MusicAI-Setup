@@ -9,7 +9,6 @@ librosa
 soundfile
 audioread
 flask_socketio
-socketio
 torchaudio
 ffmpeg
 setuptools
