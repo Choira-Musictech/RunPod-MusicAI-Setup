@@ -1,0 +1,28 @@
+
+version: '3'
+services:
+  nodejs-server:
+    build:
+      context: ./musicai-server
+      dockerfile: ./Dockerfile
+    # image: musicai-server
+    environment:
+      - NODE_ENV=development  
+    ports:
+      - "3002:3002"
+    container_name: musicai-server
+    volumes:
+       - ./musicai-server:/app
+      #  - /app/musicai-server/node_modules
+  react-ui:
+    build:
+      context: ./musicai-client
+      dockerfile: ./Dockerfile
+    # image: musicai-client
+    ports:
+      - "3001:3001"
+    container_name: musicai-ui
+    stdin_open: true
+    volumes:
+       - ./musicai-client:/app
+      #  - /app/musicai-client/node_modules

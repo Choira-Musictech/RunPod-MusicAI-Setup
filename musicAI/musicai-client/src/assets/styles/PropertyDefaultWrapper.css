@@ -1,0 +1,15 @@
+.property-default-wrapper {
+    height: 100px;
+    position: relative;
+    width: 100px;
+  }
+  
+  .property-default-wrapper .polygon-2 {
+    height: 93px;
+    left: 7px;
+    mix-blend-mode: screen;
+    position: absolute;
+    top: 4px;
+    width: 87px;
+  }
+  

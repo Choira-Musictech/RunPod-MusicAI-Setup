@@ -1,0 +1,21 @@
+# Base image
+FROM node:latest
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm cache clean --force
+RUN npm install
+# --frozen-lockfile
+
+# Copy the entire app
+COPY . .
+
+EXPOSE 3000
+
+# Development mode
+CMD ["npm", "start", "run"]

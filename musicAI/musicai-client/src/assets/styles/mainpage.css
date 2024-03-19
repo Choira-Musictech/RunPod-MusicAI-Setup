@@ -1,0 +1,37 @@
+.headerStyle {
+    textAlign: center;
+    color: #fff;
+    height: 64;
+    paddingInline: 50;
+    lineHeight: 64px;
+    backgroundColor: #7dbcea;
+    /* background-image: url('https://choira.io/static/media/choria.96439620.svg') */
+  };
+
+.demo-logo {
+    width: 120px;
+    height: 32px;
+    /* background: rgba(255,255,255,.2); */
+    background-image: url('https://choira.io/static/media/choria.96439620.svg');
+    border-radius: 6px;
+}
+
+
+.contentStyle  {
+    textAlign: center;
+    minHeight: 120;
+    lineHeight: 120px;
+    color: #fff;
+    backgroundColor: #108ee9;
+    };
+.siderStyle  {
+    textAlign: 'center';
+    lineHeight: '120px';
+    color: '#fff';
+    backgroundColor: '#3ba0e9';
+    };
+.footerStyle  {
+    textAlign: 'center';
+    color: '#fff';
+    backgroundColor: '#7dbcea';
+    };
