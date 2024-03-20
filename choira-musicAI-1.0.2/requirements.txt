@@ -7,7 +7,6 @@ torch
 git+https://git@github.com/facebookresearch/audiocraft#egg=audiocraft
 librosa
 soundfile
-audio
 audioread
 flask_socketio
 torchaudio
