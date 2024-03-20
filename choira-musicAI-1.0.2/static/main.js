@@ -20,7 +20,7 @@ document.getElementById("text").addEventListener("keydown", function(e) {
     }
 });
 
-var socket = io.connect('http://ai.choira.io:5000');
+var socket = io.connect('https://l705vnwlof6cc3-5002.proxy.runpod.net');
 socket.on('new_file', function(data) {
     var output_filename = data.output_filename;
     var new_file = {
