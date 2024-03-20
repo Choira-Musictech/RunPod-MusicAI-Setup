@@ -12,4 +12,3 @@ audioread
 flask_socketio
 torchaudio
 ffmpeg
-setuptools
