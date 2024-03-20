@@ -180,4 +180,4 @@ if __name__ == '__main__':
     if not os.path.exists('static/audio'):
         os.makedirs('static/audio')
     threading.Thread(target=worker_process_queue, daemon=True).start()
-    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", port=5001) #host="0.0.0.0", debug=True
+    socketio.run(app, allow_unsafe_werkzeug=True, host="0.0.0.0", port=5002) #host="0.0.0.0", debug=True
