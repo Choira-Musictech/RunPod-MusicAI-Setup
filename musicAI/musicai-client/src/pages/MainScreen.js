@@ -688,7 +688,9 @@ function MainScreen() {
 
   return (
     <>
+
       <div className="layout-content">
+
 
       <Row className="mb-24" style={{display:'flex',justifyContent:'space-evenly'}} >
         {/* <Col xs={24} md={12} sm={24} lg={12} xl={14} > */}
@@ -706,7 +708,7 @@ function MainScreen() {
                 <div className="h-full col-content p-20" style={{display:'flex',justifyContent:'space-evenly'}}>
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
-                    <Title level={5}>AI Music Generator </Title>
+                    <Title level={5}>OASIS </Title>
                     <Paragraph className="lastweek mb-36">
                     Our AI music generator is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
                     </Paragraph>
@@ -768,7 +770,7 @@ function MainScreen() {
                         <Form.Item
                           className="formLabel"
                           name="text"
-                          label="Song description"
+                          label="Description"
                           rules={[
                             {
                               required: true,
@@ -783,9 +785,9 @@ function MainScreen() {
                           className="formLabel"
                           name="method"
                           valuePropName="checked"
-                          label="Method"
+                          label="Generation"
                           >
-                          <Switch className="formLabel" style={{background:'#353839', color:"#F5F5F5"}} checkedChildren="Search 🎼" unCheckedChildren="✨ AI Generate" defaultChecked />
+                          <Switch className="formLabel" style={{background:'#353839', color:"#F5F5F5"}} checkedChildren="Background Music 🎼 " unCheckedChildren="✨ Complete Song " defaultChecked />
                         </Form.Item>
 
                         {/* <Form.Item
