@@ -720,7 +720,9 @@ function MainScreen() {
 
   return (
     <>
+
       <div className="layout-content">
+
 
       <Row className="mb-24" style={{display:'flex',justifyContent:'space-evenly'}} >
         {/* <Col xs={24} md={12} sm={24} lg={12} xl={14} > */}
@@ -813,7 +815,7 @@ function MainScreen() {
                         <Form.Item
                           className="formLabel"
                           name="text"
-                          label="Music description"
+                          label="Description"
                           rules={[
                             {
                               required: true,
@@ -828,9 +830,9 @@ function MainScreen() {
                           className="formLabel"
                           name="method"
                           valuePropName="checked"
-                          label="Method"
+                          label="Generation"
                           >
-                          <Switch className="formLabel" style={{background:'#353839', color:"#F5F5F5"}} checkedChildren="✨ AI Generate" unCheckedChildren="Search 🎼" defaultChecked />
+                          <Switch className="formLabel" style={{background:'#353839', color:"#F5F5F5"}} checkedChildren="Background Music 🎼 " unCheckedChildren="✨ Complete Song " defaultChecked />
                         </Form.Item>
 
                         {/* <Form.Item

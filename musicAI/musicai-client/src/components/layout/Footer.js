@@ -5,16 +5,16 @@ import { HeartFilled } from "@ant-design/icons";
 
 function Footer() {
   const { Footer: AntFooter } = Layout;
-
+  const currentYear = new Date().getFullYear();
   return (
     <AntFooter >
       {/* style={{ background: "#fafafa" }} */}
       <Row className="">
         <Col xs={24} md={12} lg={12}>
           <div className="copyright">
-            © 2023, made with
+            © {currentYear}, made with
             {<HeartFilled />} by
-            <a href="#" className="font-weight-bold" target="_blank">
+            <a href="#" className="font-weight-bold" target="_blank" style={{color:'#FFC701'}}>
               Choira
             </a>
             the last remaining magic in this world.✨
