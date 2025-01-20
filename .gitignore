@@ -1,3 +1,4 @@
 musicAI/musicai-server/.env
 musicAI/musicai-client/.env
+musicAI/musicai-server/node_modules
 .env
