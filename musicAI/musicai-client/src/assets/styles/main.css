@@ -777,6 +777,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   /* display: flex; */
   flex-direction: row;
   justify-content: center;
+   /* border: 2px solid red; */
 }
 .card-document {
   width: 32px;
@@ -1771,6 +1772,7 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   height: 350px; /* Set the fixed height */
   overflow: hidden; /* Hide any overflow from the image */
   left:100px;
+   /* border: 2px solid red; */
 }
 
 .image {
@@ -1793,15 +1795,31 @@ ul.ant-menu.ant-menu-root.ant-menu-inline.ant-menu-light.left-nav
   .image {
     width: 100%; /* Adjust the width for smaller screens */
   }
+  .mainImg{
+  /* border: 2px solid green; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  }
+  .image-container{
+    left: 0px;
+    width: 90%;
+  }
+  .mb-24{
+    width: 100%;
+  }
+
 }
 
 .overlay {
   position: absolute;
-  bottom: 0;
+  bottom: 0px;
+   /* border: 2px solid red; */
   left: 0;
   height:auto;
   width: 100%;
-  padding: 10px;
+  /* padding: 10px; */
   background-color: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3px);
   color: #fff;
