@@ -2,6 +2,6 @@ const express = require('express')
 const Controller = require("../../controllers/voice.controller")
 const app = express.Router()
 
-app.get("/voiceLink",Controller.voiceController)
+app.post("/complete",Controller.voiceController)
 
 module.exports = app

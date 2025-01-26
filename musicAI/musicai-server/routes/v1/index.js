@@ -1,7 +1,7 @@
 const express = require('express');
 const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
-const voiceRoute = require('./auth.voice');
+const voiceRoute = require('./voice.route');
 const docsRoute = require('./docs.route');
 const config = require('../../config/config');
 
@@ -17,7 +17,7 @@ const defaultRoutes = [
     route: userRoute,
   },
   {
-    path: '/voice',
+    path: '/song',
     route: voiceRoute,
   },
 ];
