@@ -58,10 +58,10 @@ import team4 from "../assets/images/team-4.jpg";
 // import card1 from "../assets/images/info-card-1.jpg";
 import card1 from "../assets/images/generated-img.png";
 import card from "../assets/images/generated-img-1.png";
-
+import BeatingIndicator from "../components/indicator/green";
 function MainScreen() {
   const { Title, Text } = Typography;
-  const baseURL = "http://ai.choira.io:5000/";
+  const baseURL = "http://ai.choira.io/";
 
   const [audioData, setAudioData] = useState([
   ])
@@ -570,38 +570,66 @@ function MainScreen() {
   };
   
 
-  const onFinish = (values) => {
-    console.log("target", values);
-    const randomId = Math.floor(Math.random() * 1000)
-    setLocalID(randomId)
+  // const onFinish = (values) => {
+  //   console.log("target", values);
+  //   const randomId = Math.floor(Math.random() * 1000)
+  //   setLocalID(randomId)
     
-    // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
-    const data = {
-      duration: values?.duration || 30,
-      cfg_coef: values?.cfg_coef || 7,
-      text: values?.text,
-      model: "large",
-      temperature:1,
-      segments: 1,
-      overlap:4.5,
-      topk: 0,
-      topp: 0,
-      audioID: randomId,
-    }
-    console.log('Received values of form: ', data);
-    if(values.method) {
-      onSampleFinish(values, randomId)
-    } else {
-    // AI Generator
-    console.log("Generating using AI");
-    axios.post(`http://ai.choira.io:5000/`,{
-      data:data
-    }).then((audioResp)=>{
-        console.log("Resp Submitted ", audioResp)
-        message.loading(`Audio generation in progress...`)
-        // setTimeout(messageApi.destroy, 10000);
-    });
-    }
+  //   // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
+  //   const data = {
+  //     duration: values?.duration || 30,
+  //     cfg_coef: values?.cfg_coef || 7,
+  //     text: values?.text,
+  //     model: "facebook/musicgen-large",
+  //     temperature:1,
+  //     segments: 1,
+  //     overlap:4.5,
+  //     topk: 0,
+  //     topp: 0,
+  //     audioID: randomId,
+  //   }
+  //   console.log('Received values of form: ', data);
+  //   if(values.method) {
+  //     onSampleFinish(values, randomId)
+  //   } else {
+  //   // AI Generator
+  //   console.log("Generating using AI");
+  //   axios.post(`https://pipeline.choira.io/`,{
+  //     data:data
+  //   }).then((audioResp)=>{
+  //       console.log("Resp Submitted ", audioResp)
+  //       message.loading(`Audio generation in progress...`)
+  //       // setTimeout(messageApi.destroy, 10000);
+  //   });
+  //   }
+  //   // IMG Generator
+  //   const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
+  //   const textUrl = values?.text.substring(0,50);
+  //   console.log("textUrl", textUrl);
+  //   const formData = new FormData();
+  //   formData.append('q', textUrl);
+  //   formData.append('YOUR_API_KEY', apiKey);
+
+  //   axios.get(`https://api.giphy.com/v1/gifs/search?api_key=DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA&q=${textUrl}&limit=25&offset=0&rating=g&lang=en`
+  //   // , formData, 
+  //   // {
+  //   //   headers: {
+  //   //     'api-key': apiKey,
+  //   //     'Content-Type': 'multipart/form-data',
+  //   //   },
+  //   // }
+  //   ).then((imgData)=>{
+  //       console.log("imgData Submitted ", imgData.data.data[0]?.images)
+  //       // console.log("imgData Submitted ", imgData.data.data[0].images)
+  //       if(imgData.data.data[0]?.images) setLocalText((prevState) => ({ ...prevState, img: imgData.data.data[0].images.original.url }))
+  //   });
+  // };
+
+  const onFinish = (values)=>{
+
+    setCurrentAudio(prevState => ({ ...prevState, output_filename:'' }));
+    socket.emit('generate-music-large',{duration:values.duration,prompt:values.text})
+
     // IMG Generator
     const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
     const textUrl = values?.text.substring(0,50);
@@ -623,9 +651,11 @@ function MainScreen() {
         // console.log("imgData Submitted ", imgData.data.data[0].images)
         if(imgData.data.data[0]?.images) setLocalText((prevState) => ({ ...prevState, img: imgData.data.data[0].images.original.url }))
     });
-  };
+    
+  }
 
   useEffect(() => {
+    console.log(socket?.id)
     socket.on('connect',()=>{
       console.log("Connected to server");
     })
@@ -633,24 +663,26 @@ function MainScreen() {
       console.log("Disconnected to server");  
       message.error(`refresh page!`)
     })
-    socket.on('new_file',(data)=>{
+    socket.on('music_generated',(data)=>{
       
       console.log("New file created",data);
       // setCurrentAudio(data)
       setCurrentAudio((prevState) => ({
         ...prevState,
-        audioID: data.audioID,
-        output_filename: `http://ai.choira.io:5000/static/audio/${data.output_filename}`,
+        audioID: data.file_name,
+        output_filename: `https://pipeline.choira.io/api/audio/${data.file_name}`,
       }));
       // setCurrentAudio(prevState => ({ ...prevState, showWave: false }));
       // message.success(`${data.output_filename} generated!`)
       // setTimeout(messageApi.destroy, 1000);    
     })
 
-    socket.on('progress',(data)=>{
-      const {generated_tokens, tokens_to_generate} = data
-      const progressState = generated_tokens/tokens_to_generate*100
-      currentAudio.progress = progressState
+    socket.on('music-progress',(data)=>{
+      // const {generated_tokens, tokens_to_generate} = data
+      const {progress} = data
+      // const progressState = generated_tokens/tokens_to_generate*100
+      const progressState = progress
+      currentAudio.progress = progress
       // setCurrentAudio(currentAudio.toFixed(2))
       setCurrentAudio(prevState => ({ ...prevState, progress: Math.trunc(progressState) }))
       // console.log("progressState:", currentAudio.progress,"%");
@@ -665,9 +697,10 @@ function MainScreen() {
   useEffect(() => {
     console.log("audioData", audioData);
     if(!audioData.length){
-      axios.get(`http://ai.choira.io:5000/api/audio-files`).then((audioResp)=>{
+      axios.get(`https://pipeline.choira.io/api/audio-files`).then((audioResp)=>{
         console.log("audioResp", audioResp.data);
-        const sortedAudioFiles =  audioResp.data.sort((a, b) => b.timestamp - a.timestamp);
+        // const sortedAudioFiles =  audioResp.data.generations.sort((a, b) => b.timestamp - a.timestamp);
+        const sortedAudioFiles =  audioResp.data.generations.reverse()
         // console.log("sortedAudioFiles", sortedAudioFiles);
         setAudioData(sortedAudioFiles)
       });
@@ -709,8 +742,10 @@ function MainScreen() {
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
                     <Title level={5}>OASIS </Title>
+                    <BeatingIndicator/>
                     <Paragraph className="lastweek mb-36">
                     Our AI music generator is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
+                    
                     </Paragraph>
 
                     <Form
@@ -742,6 +777,17 @@ function MainScreen() {
                               required: true,
                               message: 'duration of track in seconds',
                             },
+                            {
+                              type: "number",
+                              min:8, // Minimum value
+                              message: "The duration must be at least 8 seconds!",
+                            },
+                            {
+                              type: "number",
+                              max:40, // Minimum value
+                              message: "The duration must be at most 40 seconds!",
+                            },
+              
                           ]}
                         >
                           <InputNumber style={{ width: '50%',background:'#353839',color:"#F5F5F5" }} min={8} max={120} />
@@ -770,7 +816,7 @@ function MainScreen() {
                         <Form.Item
                           className="formLabel"
                           name="text"
-                          label="Description"
+                          label="Music description"
                           rules={[
                             {
                               required: true,
@@ -846,12 +892,12 @@ function MainScreen() {
                     {/* <Waveform audio={`http://127.0.0.1:5000/static/audio/A rising synth.wav`} /> */}
                     {/* <Progress percent={70} status="active" /> */}
                     
-                    {(currentAudio.output_filename.length && localID === currentAudio.audioID) ? (
+                    {(currentAudio.output_filename != '') ? (
                       <>
-                        <Waveform playAudio={true} audio={currentAudio.output_filename} />
-                        <Button type="primary" icon={<DownloadOutlined />} size="default">
+                        <Waveform promt_gen={"genai"} playAudio={true} audio={currentAudio.output_filename} />
+                        {/* <Button type="primary" icon={<DownloadOutlined />} size="default">
                           <a href={currentAudio.output_filename} download />
-                        </Button>
+                        </Button> */}
                       </>
                     ) : (
                       currentAudio.progress > 0 && (
@@ -901,18 +947,20 @@ function MainScreen() {
                     </tr>
                   </thead>
                   <tbody>
+                    
                     {audioData.map((d, index) => (
                       <tr key={index}>
-                        <td>{d.text.replace(".wav", "").replace("(1)", "")}</td>
+                        {/* <td>{d.text.replace(".wav", "").replace("(1)", "")}</td> */}
+                        <td>{d.user_prompt}</td>
                         <td>
                         <span className="text-xs font-weight-bold">
-                          <Waveform audio={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} playAudio={false} />
-                          {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} /> */}
+                          <Waveform audio={`https://pipeline.choira.io/api/audio/${d.filename}`} playAudio={false} />
+                          {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io/static/audio/${d.audio_file}`} /> */}
                           {/* <audio id="audio_tag" src={`http://127.0.0.1:5000/static/audio/${d.audio_file}`} controls /> */}
                         </span>
                         </td>
                         <td>
-                        <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} />
+                        {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`https://pipeline.choira.io/static/audio/${d.audio_file}`} /> */}
                           {/* {`${new Date(d.timestamp).toLocaleDateString(undefined, {month: "short", day: "numeric"})} ${new Date(d.timestamp).toLocaleTimeString()}`} */}
                           {/* { new Date(d.timestamp).toLocaleString('en-us',dateOptions) } */}
                         </td>
@@ -938,6 +986,44 @@ function MainScreen() {
                         </td> */}
                       </tr>
                     ))}
+
+                    <tr key={"0001"}>
+                      <td>80s electronic track with melodic synthesizers, catchy beat and groovy bass</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen1.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr>
+                    <tr key={"0002"}>
+                      <td>A grand orchestral arrangement with thunderous percussion, epic brass fanfares, and soaring strings, creating a cinematic atmosphere fit for a heroic battle</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen2.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr><tr key={"0003"}>
+                      <td>A light and cheerly EDM track, with syncopated drums, aery pads, and strong emotions</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen3.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr><tr key={"0004"}>
+                      <td>Classic reggae track with an electronic guitar solo</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen4.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr><tr key={"0005"}>
+                      <td>Violins and synths that inspire awe at the finiteness of life and the universe.</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen5.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

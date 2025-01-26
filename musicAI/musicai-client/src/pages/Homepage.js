@@ -53,7 +53,7 @@ export default function Homepage () {
     }
     console.log('Received values of form: ', data);
     // AI Generator
-    axios.post(`http://ai.choira.io:5000/`,{
+    axios.post(`https://pipeline.choira.io/`,{
       data:data
     }).then((audioResp)=>{
         console.log("Resp Submitted ", audioResp)
@@ -88,19 +88,19 @@ export default function Homepage () {
     console.log("audioData[0]?.audio_file", audioData[0]?.audio_file);
     setCurrentAudio(prevState => ({ ...prevState, output_filename: audioData[0]?.audio_file }));
     // audioRef.current.load()
-    audioRef.current.play()
+    audioRef.current?.play()
   }
 
   const handlePlayPause = () => {
     console.log("CLicked", currentAudio.isPlaying)
     setCurrentAudio(prevState => ({ ...prevState, isPlaying: !currentAudio.isPlaying }));
-    currentAudio.isPlaying?audioRef.current.play():audioRef.current.pause()
+    currentAudio?.isPlaying?audioRef.current?.play():audioRef.current.pause()
   }
 
   useEffect(() => {
     console.log("audioData", audioData);
     if(!audioData.length){
-      axios.get(`http://ai.choira.io:5000/api/audio-files`).then((audioResp)=>{
+      axios.get(`https://pipeline.choira.io/api/audio-files`).then((audioResp)=>{
         console.log("audioResp", audioResp.data);
         const sortedAudioFiles =  audioResp.data.sort((a, b) => b.timestamp - a.timestamp);
         // console.log("sortedAudioFiles", sortedAudioFiles);
@@ -245,7 +245,7 @@ export default function Homepage () {
             <button className="imgOverlayBtn" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} >Button</button>
           )} */}
           </div>
-          {/* <Waveform className="" audio={`http://ai.choira.io:5000/static/audio/${'uplifting%20motivational%20track(1).wav'}`} playAudio={false} />   */}
+          {/* <Waveform className="" audio={`http://ai.choira.io/static/audio/${'uplifting%20motivational%20track(1).wav'}`} playAudio={false} />   */}
           {/* <img className="group-2" alt="Group" src="/assets/Icons/Group 1000004983.png" /> */}
 
           <div className="group-2">
