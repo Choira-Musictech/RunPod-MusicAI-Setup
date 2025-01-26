@@ -5,7 +5,7 @@ import "./green.css";
 
 const { Title } = Typography;
 
-const BeatingIndicator = () => {
+const BeatingIndicator = ({title}) => {
     const [isGreen, setIsGreen] = useState(3);
 
     useEffect(() => {
@@ -19,7 +19,7 @@ const BeatingIndicator = () => {
 
   return (
     <div className="title-indicator-container">
-      <Title level={5}>AI Music Generator</Title>
+      <Title level={5}>{title}</Title>
       <div
         className={`beating-circle ${isGreen === 1 ? "green" : (isGreen === 2 ? "red": "grey")}`}
       ></div>

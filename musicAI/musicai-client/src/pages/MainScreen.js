@@ -633,7 +633,6 @@ function MainScreen() {
     // IMG Generator
     const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
     const textUrl = values?.text.substring(0,50);
-    console.log("textUrl", textUrl);
     const formData = new FormData();
     formData.append('q', textUrl);
     formData.append('YOUR_API_KEY', apiKey);
@@ -739,9 +738,10 @@ function MainScreen() {
                 <div className="h-full col-content p-20" style={{display:'flex',justifyContent:'space-evenly'}}>
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
-                    <BeatingIndicator/>
+                    {/* <Title level={5}>OASIS</Title> */}
+                    <BeatingIndicator title={"OSIS"}/>
                     <Paragraph className="lastweek mb-36">
-                    Our AI music generator is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
+                    Our Osis is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
                     
                     </Paragraph>
 

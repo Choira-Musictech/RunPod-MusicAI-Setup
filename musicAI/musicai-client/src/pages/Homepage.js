@@ -292,7 +292,7 @@ export default function Homepage () {
         </div>
         <h1 className="h-1">AI audio generator</h1>
         <p className="p">
-          Our AI music generator is based on artificial intelligence and will help you to create amazing and the most
+          Our Osis is based on artificial intelligence and will help you to create amazing and the most
           unique music track very easily from your text description.
         </p>
         <img className="group-5" alt="Group" src="https://choira.io/static/media/choria.96439620.svg" />

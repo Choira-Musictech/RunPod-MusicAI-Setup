@@ -319,7 +319,7 @@ function AdminSampleFeed () {
                     {/* <Text>Choira</Text> */}
                     <Title level={5}>Music Sample Uploader </Title>
                     <Paragraph className="lastweek mb-36">
-                    Our AI music generator is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
+                    Our Osis is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
                     </Paragraph>
 
                     <Form
