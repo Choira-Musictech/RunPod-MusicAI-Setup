@@ -8,12 +8,13 @@ import {
     PauseCircleOutlined,
   } from '@ant-design/icons';
 
-const Waveform = ({ audio,playAudio }) => {
+const Waveform = ({promt_gen, audio,playAudio }) => {
   const containerRef = useRef();
   const waveSurferRef = useRef({
     isPlaying: () => false,
   });
   const [isPlaying, toggleIsPlaying] = useState(false);
+  const [fileReady, setFileReady] = useState(false);
 
   useEffect(() => {
     const waveSurfer = WaveSurfer.create({
@@ -29,6 +30,7 @@ const Waveform = ({ audio,playAudio }) => {
     });
     waveSurfer.load(audio);
     waveSurfer.on('ready', () => {
+      if(promt_gen === "genai") setFileReady(true);
       waveSurferRef.current = waveSurfer;
       if(playAudio){
         waveSurferRef.current.playPause();
@@ -44,11 +46,15 @@ const Waveform = ({ audio,playAudio }) => {
 
   return (
     <WaveSurferWrap>
+      {/* {fileReady || promt_gen !== "genai" ? <Button */}
       <Button
         size='large'
         onClick={() => {
-          waveSurferRef.current.playPause();
-          toggleIsPlaying(waveSurferRef.current.isPlaying());
+          if(fileReady || promt_gen !== "genai"){
+            waveSurferRef.current?.playPause();
+            toggleIsPlaying(waveSurferRef.current?.isPlaying());
+          }
+          
         }}
         type="button"
       >

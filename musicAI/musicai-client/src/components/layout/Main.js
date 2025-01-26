@@ -125,6 +125,8 @@ function Main({ children }) {
           </AntHeader>
         )} */}
         <AntHeader >
+        <div style={{color:"white",backgroundColor:"#333333"}}><p style={{textAlign:"center"}}>If you would like to test the AI music generation feature, please reach out to us at <span style={{color:"#ffc701"}}><a style={{color:"inherit"}} href="mailto:dev@choira.io">dev@choira.io</a></span></p></div>
+
           <div className="demo-logo" />
         </AntHeader>
         <Content className="content-ant">{children}</Content>

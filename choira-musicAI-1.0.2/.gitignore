@@ -1,2 +1,3 @@
 /static/audio/
 __pycache__
+/node_modules

@@ -1,0 +1,37 @@
+.title-indicator-container {
+    display: flex;
+    align-items: top; /* Vertically center Title and indicator */
+    gap: 10px; /* Space between Title and the indicator */
+  }
+  
+  .beating-circle {
+    width: 13px; /* Adjust size to match design */
+    height: 13px;
+    border-radius: 50%; /* Makes it a perfect circle */
+    animation: beat 1s infinite;
+  }
+  
+  .green {
+    background-color: green;
+  }
+  
+  .red {
+    background-color: red;
+  }
+
+  .grey  {
+
+    background-color: rgb(124, 124, 124);
+
+
+  }
+  
+  @keyframes beat {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
+  
