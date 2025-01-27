@@ -727,7 +727,8 @@ console.log("currentAudio changed-----------------------------------------------
                 <div className="h-full col-content p-20" style={{display:'flex',justifyContent:'space-evenly'}}>
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
-                    <Title level={5}>OASIS </Title>
+                    {/* <Title level={5}>OASIS </Title> */}
+                    <BeatingIndicator title={"OSIS"}/>
                     <Paragraph className="lastweek mb-36">
                     Our AI music generator is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
                     </Paragraph>
