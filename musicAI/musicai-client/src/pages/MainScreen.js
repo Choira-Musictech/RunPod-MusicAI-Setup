@@ -68,7 +68,9 @@ function MainScreen() {
   const [currentAudio, setCurrentAudio] = useState({ output_filename:'', audioID: 0, progress:0, showWave: false })
   const [localID, setLocalID] = useState(0)
   const [localText, setLocalText] = useState({text:'',img:''})
-
+useEffect(() => {
+console.log("currentAudio changed----------------------------------------------------------------", currentAudio)
+}, [currentAudio])
   const list = [
     {
       img: ava1,
@@ -575,60 +577,50 @@ function MainScreen() {
   //   const randomId = Math.floor(Math.random() * 1000)
   //   setLocalID(randomId)
     
-  //   // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
-  //   const data = {
-  //     duration: values?.duration || 30,
-  //     cfg_coef: values?.cfg_coef || 7,
-  //     text: values?.text,
-  //     model: "facebook/musicgen-large",
-  //     temperature:1,
-  //     segments: 1,
-  //     overlap:4.5,
-  //     topk: 0,
-  //     topp: 0,
-  //     audioID: randomId,
-  //   }
-  //   console.log('Received values of form: ', data);
-  //   if(values.method) {
-  //     onSampleFinish(values, randomId)
-  //   } else {
-  //   // AI Generator
-  //   console.log("Generating using AI");
-  //   axios.post(`https://pipeline.choira.io/`,{
-  //     data:data
-  //   }).then((audioResp)=>{
-  //       console.log("Resp Submitted ", audioResp)
-  //       message.loading(`Audio generation in progress...`)
-  //       // setTimeout(messageApi.destroy, 10000);
-  //   });
-  //   }
-  //   // IMG Generator
-  //   const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
-  //   const textUrl = values?.text.substring(0,50);
-  //   console.log("textUrl", textUrl);
-  //   const formData = new FormData();
-  //   formData.append('q', textUrl);
-  //   formData.append('YOUR_API_KEY', apiKey);
-
-  //   axios.get(`https://api.giphy.com/v1/gifs/search?api_key=DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA&q=${textUrl}&limit=25&offset=0&rating=g&lang=en`
-  //   // , formData, 
-  //   // {
-  //   //   headers: {
-  //   //     'api-key': apiKey,
-  //   //     'Content-Type': 'multipart/form-data',
-  //   //   },
-  //   // }
-  //   ).then((imgData)=>{
-  //       console.log("imgData Submitted ", imgData.data.data[0]?.images)
-  //       // console.log("imgData Submitted ", imgData.data.data[0].images)
-  //       if(imgData.data.data[0]?.images) setLocalText((prevState) => ({ ...prevState, img: imgData.data.data[0].images.original.url }))
-  //   });
-  // };
-
-  const onFinish = (values)=>{
-
-    setCurrentAudio(prevState => ({ ...prevState, output_filename:'' }));
-    socket.emit('generate-music-large',{duration:values.duration,prompt:values.text})
+    // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
+    const data = {
+      duration: values?.duration || 30,
+      cfg_coef: values?.cfg_coef || 7,
+      text: values?.text,
+      model: "large",
+      temperature:1,
+      segments: 1,
+      overlap:4.5,
+      topk: 0,
+      topp: 0,
+      audioID: randomId,
+    }
+    console.log('Received values of form: ', data);
+    if(values.method) {
+      onSampleFinish(values, randomId)
+      
+    } else {
+    // AI Generator
+    console.log("Generating using AI");
+    // axios.post(`http://ai.choira.io:5000/`,{
+    //   data:data
+    // }).then((audioResp)=>{
+    //     console.log("Resp Submitted ", audioResp)
+    //     message.loading(`Audio generation in progress...`)
+    //     // setTimeout(messageApi.destroy, 10000);
+    // });
+    message.loading(`Audio generation in progress...`,0);
+    axios.get(`http://10.137.51.184:3003/server/v1/voice/voiceLink`).then((audioResp)=>{
+      console.log("Resp Submitted ", audioResp)
+      // message.loading(`Audio generation in progress...`)
+      message.destroy();
+      message.success(`Audio generation completed`)
+      // let data =currentAudio
+      // data.output_filename = audioResp.audio_url
+      console.log(audioResp.data.audio_url,"audioResp.audio_urlaudioResp.audio_urlaudioResp.audio_urlaudioResp.audio_url")
+      setCurrentAudio((prevState) => ({
+        ...prevState,
+        output_filename: audioResp.data.audio_url,
+        audioID: randomId,
+      }));
+      // setTimeout(messageApi.destroy, 10000);
+  });
+    }
 
     // IMG Generator
     const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
@@ -740,7 +732,8 @@ function MainScreen() {
                 <div className="h-full col-content p-20" style={{display:'flex',justifyContent:'space-evenly'}}>
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
-                    {/* <Title level={5}>OASIS</Title> */}
+                    {/* <Title level={5}>OASIS </Title> */}
+
                     <BeatingIndicator title={"OSIS"}/>
                     <Paragraph className="lastweek mb-36">
                     Our Osis is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
@@ -768,29 +761,33 @@ function MainScreen() {
                           <span className="ant-form-text">music</span>
                         </Form.Item> */}
                         <Form.Item
-                          className="formLabel"
-                          name='duration'
-                          label="Duration"
-                          rules={[
-                            {
-                              required: true,
-                              message: 'duration of track in seconds',
-                            },
-                            {
-                              type: "number",
-                              min:8, // Minimum value
-                              message: "The duration must be at least 8 seconds!",
-                            },
-                            {
-                              type: "number",
-                              max:40, // Minimum value
-                              message: "The duration must be at most 40 seconds!",
-                            },
-              
-                          ]}
-                        >
-                          <InputNumber style={{ width: '50%',background:'#353839',color:"#F5F5F5" }} min={8} max={120} />
-                        </Form.Item>
+
+                            className="formLabel"
+                            name="duration"
+                            label="Duration"
+
+                            rules={[
+                              {
+                                required: true,
+                                message: "Duration of track in seconds",
+                              },
+                            ]}
+                          >
+                            <Row gutter={[16, 16]}>
+                              <Col xs={24} sm={12} md={8} lg={6}>
+                                <InputNumber
+                                  style={{
+                                    width: "100%",
+                                    background: "#353839",
+                                    color: "#F5F5F5",
+                                  }}
+                                  min={8}
+                                  max={120}
+                                />
+                              </Col>
+                            </Row>
+                          </Form.Item>
+
                         {/* <Form.Item
                           className="formLabel"
                           name="cfg_coef"
@@ -851,8 +848,8 @@ function MainScreen() {
                           </Checkbox>
                         </Form.Item> */}
                         
-                        <Form.Item {...tailFormItemLayout} >
-                          <Space span={2} direction="horizontal"  style={{ display: 'flex' }}>
+                        <Form.Item {...tailFormItemLayout} style={{display:"flex", justifyContent:"center",paddingRight :"15%" }} >
+                          <Space span={2} direction="horizontal"  >
                           <Button type="primary" name="AI" htmlType="submit" style={{background:'#faad14', borderColor: '#faad14'}}>
                           <span style={{color:"white",fontWeight:700,fontSize:20}}>Create ✨🚀</span>
                           </Button>
@@ -865,7 +862,7 @@ function MainScreen() {
                         </Form.Item> */}
                         
                     </Form>
-
+                    
                   </div>
                   {/* <div className="card-footer">
                     <a className="icon-move-right" href="#pablo">
@@ -890,8 +887,9 @@ function MainScreen() {
                   <div className="overlay">
                     {/* <Waveform audio={`http://127.0.0.1:5000/static/audio/A rising synth.wav`} /> */}
                     {/* <Progress percent={70} status="active" /> */}
-                    
-                    {(currentAudio.output_filename != '') ? (
+                    {/* //currentAudio.output_filename.length && localID === currentAudio.audioID */}
+                    {(currentAudio?.output_filename?.length && localID === currentAudio?.audioID ) ? (
+
                       <>
                         <Waveform promt_gen={"genai"} playAudio={true} audio={currentAudio.output_filename} />
                         {/* <Button type="primary" icon={<DownloadOutlined />} size="default">
@@ -913,8 +911,8 @@ function MainScreen() {
 
       </Row>
 
-      <Row gutter={[24, 0]}>
-          <Col span={24} className="mb-24">
+      <Row gutter={[24, 0]} >
+          <Col span={24} className="mb-24 " >
             <Card bordered={false} className="criclebox cardbody h-full">
               <div className="project-ant">
                 <div>
