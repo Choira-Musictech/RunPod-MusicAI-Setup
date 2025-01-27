@@ -58,10 +58,10 @@ import team4 from "../assets/images/team-4.jpg";
 // import card1 from "../assets/images/info-card-1.jpg";
 import card1 from "../assets/images/generated-img.png";
 import card from "../assets/images/generated-img-1.png";
-
+import BeatingIndicator from "../components/indicator/green";
 function MainScreen() {
   const { Title, Text } = Typography;
-  const baseURL = "http://ai.choira.io:5000/";
+  const baseURL = "http://ai.choira.io/";
 
   const [audioData, setAudioData] = useState([
   ])
@@ -572,10 +572,10 @@ console.log("currentAudio changed-----------------------------------------------
   };
   
 
-  const onFinish = (values) => {
-    console.log("target", values);
-    const randomId = Math.floor(Math.random() * 1000)
-    setLocalID(randomId)
+  // const onFinish = (values) => {
+  //   console.log("target", values);
+  //   const randomId = Math.floor(Math.random() * 1000)
+  //   setLocalID(randomId)
     
     // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
     const data = {
@@ -621,10 +621,10 @@ console.log("currentAudio changed-----------------------------------------------
       // setTimeout(messageApi.destroy, 10000);
   });
     }
+
     // IMG Generator
     const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
     const textUrl = values?.text.substring(0,50);
-    console.log("textUrl", textUrl);
     const formData = new FormData();
     formData.append('q', textUrl);
     formData.append('YOUR_API_KEY', apiKey);
@@ -642,9 +642,11 @@ console.log("currentAudio changed-----------------------------------------------
         // console.log("imgData Submitted ", imgData.data.data[0].images)
         if(imgData.data.data[0]?.images) setLocalText((prevState) => ({ ...prevState, img: imgData.data.data[0].images.original.url }))
     });
-  };
+    
+  }
 
   useEffect(() => {
+    console.log(socket?.id)
     socket.on('connect',()=>{
       console.log("Connected to server");
     })
@@ -652,24 +654,26 @@ console.log("currentAudio changed-----------------------------------------------
       console.log("Disconnected to server");  
       message.error(`refresh page!`)
     })
-    socket.on('new_file',(data)=>{
+    socket.on('music_generated',(data)=>{
       
       console.log("New file created",data);
       // setCurrentAudio(data)
       setCurrentAudio((prevState) => ({
         ...prevState,
-        audioID: data.audioID,
-        output_filename: `http://ai.choira.io:5000/static/audio/${data.output_filename}`,
+        audioID: data.file_name,
+        output_filename: `https://pipeline.choira.io/api/audio/${data.file_name}`,
       }));
       // setCurrentAudio(prevState => ({ ...prevState, showWave: false }));
       // message.success(`${data.output_filename} generated!`)
       // setTimeout(messageApi.destroy, 1000);    
     })
 
-    socket.on('progress',(data)=>{
-      const {generated_tokens, tokens_to_generate} = data
-      const progressState = generated_tokens/tokens_to_generate*100
-      currentAudio.progress = progressState
+    socket.on('music-progress',(data)=>{
+      // const {generated_tokens, tokens_to_generate} = data
+      const {progress} = data
+      // const progressState = generated_tokens/tokens_to_generate*100
+      const progressState = progress
+      currentAudio.progress = progress
       // setCurrentAudio(currentAudio.toFixed(2))
       setCurrentAudio(prevState => ({ ...prevState, progress: Math.trunc(progressState) }))
       // console.log("progressState:", currentAudio.progress,"%");
@@ -684,9 +688,10 @@ console.log("currentAudio changed-----------------------------------------------
   useEffect(() => {
     console.log("audioData", audioData);
     if(!audioData.length){
-      axios.get(`http://ai.choira.io:5000/api/audio-files`).then((audioResp)=>{
+      axios.get(`https://pipeline.choira.io/api/audio-files`).then((audioResp)=>{
         console.log("audioResp", audioResp.data);
-        const sortedAudioFiles =  audioResp.data.sort((a, b) => b.timestamp - a.timestamp);
+        // const sortedAudioFiles =  audioResp.data.generations.sort((a, b) => b.timestamp - a.timestamp);
+        const sortedAudioFiles =  audioResp.data.generations.reverse()
         // console.log("sortedAudioFiles", sortedAudioFiles);
         setAudioData(sortedAudioFiles)
       });
@@ -728,9 +733,11 @@ console.log("currentAudio changed-----------------------------------------------
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
                     {/* <Title level={5}>OASIS </Title> */}
+
                     <BeatingIndicator title={"OSIS"}/>
                     <Paragraph className="lastweek mb-36">
-                    Our AI music generator is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
+                    Our Osis is based on artistic intelligence and will help you to create amazing and the most unique music track very easily from your text description.
+                    
                     </Paragraph>
 
                     <Form
@@ -754,31 +761,33 @@ console.log("currentAudio changed-----------------------------------------------
                           <span className="ant-form-text">music</span>
                         </Form.Item> */}
                         <Form.Item
-  className="formLabel"
-  name="duration"
-  label="Duration"
-                          
-  rules={[
-    {
-      required: true,
-      message: "Duration of track in seconds",
-    },
-  ]}
->
-  <Row gutter={[16, 16]}>
-    <Col xs={24} sm={12} md={8} lg={6}>
-      <InputNumber
-        style={{
-          width: "100%",
-          background: "#353839",
-          color: "#F5F5F5",
-        }}
-        min={8}
-        max={120}
-      />
-    </Col>
-  </Row>
-</Form.Item>
+
+                            className="formLabel"
+                            name="duration"
+                            label="Duration"
+
+                            rules={[
+                              {
+                                required: true,
+                                message: "Duration of track in seconds",
+                              },
+                            ]}
+                          >
+                            <Row gutter={[16, 16]}>
+                              <Col xs={24} sm={12} md={8} lg={6}>
+                                <InputNumber
+                                  style={{
+                                    width: "100%",
+                                    background: "#353839",
+                                    color: "#F5F5F5",
+                                  }}
+                                  min={8}
+                                  max={120}
+                                />
+                              </Col>
+                            </Row>
+                          </Form.Item>
+
                         {/* <Form.Item
                           className="formLabel"
                           name="cfg_coef"
@@ -880,11 +889,12 @@ console.log("currentAudio changed-----------------------------------------------
                     {/* <Progress percent={70} status="active" /> */}
                     {/* //currentAudio.output_filename.length && localID === currentAudio.audioID */}
                     {(currentAudio?.output_filename?.length && localID === currentAudio?.audioID ) ? (
+
                       <>
-                        <Waveform playAudio={true} audio={currentAudio.output_filename} />
-                        <Button type="primary" icon={<DownloadOutlined />} size="default">
+                        <Waveform promt_gen={"genai"} playAudio={true} audio={currentAudio.output_filename} />
+                        {/* <Button type="primary" icon={<DownloadOutlined />} size="default">
                           <a href={currentAudio.output_filename} download />
-                        </Button>
+                        </Button> */}
                       </>
                     ) : (
                       currentAudio.progress > 0 && (
@@ -934,18 +944,20 @@ console.log("currentAudio changed-----------------------------------------------
                     </tr>
                   </thead>
                   <tbody>
+                    
                     {audioData.map((d, index) => (
                       <tr key={index}>
-                        <td>{d.text.replace(".wav", "").replace("(1)", "")}</td>
+                        {/* <td>{d.text.replace(".wav", "").replace("(1)", "")}</td> */}
+                        <td>{d.user_prompt}</td>
                         <td>
                         <span className="text-xs font-weight-bold">
-                          <Waveform audio={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} playAudio={false} />
-                          {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} /> */}
+                          <Waveform audio={`https://pipeline.choira.io/api/audio/${d.filename}`} playAudio={false} />
+                          {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io/static/audio/${d.audio_file}`} /> */}
                           {/* <audio id="audio_tag" src={`http://127.0.0.1:5000/static/audio/${d.audio_file}`} controls /> */}
                         </span>
                         </td>
                         <td>
-                        <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} />
+                        {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`https://pipeline.choira.io/static/audio/${d.audio_file}`} /> */}
                           {/* {`${new Date(d.timestamp).toLocaleDateString(undefined, {month: "short", day: "numeric"})} ${new Date(d.timestamp).toLocaleTimeString()}`} */}
                           {/* { new Date(d.timestamp).toLocaleString('en-us',dateOptions) } */}
                         </td>
@@ -971,6 +983,44 @@ console.log("currentAudio changed-----------------------------------------------
                         </td> */}
                       </tr>
                     ))}
+
+                    <tr key={"0001"}>
+                      <td>80s electronic track with melodic synthesizers, catchy beat and groovy bass</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen1.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr>
+                    <tr key={"0002"}>
+                      <td>A grand orchestral arrangement with thunderous percussion, epic brass fanfares, and soaring strings, creating a cinematic atmosphere fit for a heroic battle</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen2.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr><tr key={"0003"}>
+                      <td>A light and cheerly EDM track, with syncopated drums, aery pads, and strong emotions</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen3.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr><tr key={"0004"}>
+                      <td>Classic reggae track with an electronic guitar solo</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen4.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr><tr key={"0005"}>
+                      <td>Violins and synths that inspire awe at the finiteness of life and the universe.</td>
+                      <td>
+                      <span className="text-xs font-weight-bold">
+                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen5.wav'} playAudio={false} />
+                      </span>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
