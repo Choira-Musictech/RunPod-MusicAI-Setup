@@ -34,8 +34,7 @@ import Paragraph from "antd/lib/typography/Paragraph";
 
 // components
 import Waveform from "../components/audio/Waveform";
-import Echart from "../components/chart/EChart";
-import LineChart from "../components/chart/LineChart";
+
 
 // services
 import SampleService from "../services/sample.service";
