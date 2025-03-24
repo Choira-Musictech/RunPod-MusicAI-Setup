@@ -572,12 +572,12 @@ console.log("currentAudio changed-----------------------------------------------
   };
   
 
-  // const onFinish = (values) => {
-  //   console.log("target", values);
-  //   const randomId = Math.floor(Math.random() * 1000)
-  //   setLocalID(randomId)
+  const onFinish = (values) => {
+    console.log("target", values);
+    const randomId = Math.floor(Math.random() * 1000)
+    setLocalID(randomId)
     
-    // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
+    setLocalText((prevState) => ({ ...prevState, text: values?.text }));
     const data = {
       duration: values?.duration || 30,
       cfg_coef: values?.cfg_coef || 7,
