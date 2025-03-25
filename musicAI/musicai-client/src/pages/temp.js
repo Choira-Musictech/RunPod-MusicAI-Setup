@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import { FiPaperclip } from "react-icons/fi";
 import {
   Card,
   Col,
@@ -22,7 +22,6 @@ import {
   Timeline,
   Radio,
   Space,
-  
 } from "antd";
 import {
   ToTopOutlined,
@@ -36,7 +35,8 @@ import Paragraph from "antd/lib/typography/Paragraph";
 
 // components
 import Waveform from "../components/audio/Waveform";
-
+import Echart from "../components/chart/EChart";
+import LineChart from "../components/chart/LineChart";
 
 // services
 import SampleService from "../services/sample.service";
@@ -57,20 +57,21 @@ import team4 from "../assets/images/team-4.jpg";
 // import card1 from "../assets/images/info-card-1.jpg";
 import card1 from "../assets/images/generated-img.png";
 import card from "../assets/images/generated-img-1.png";
-import BeatingIndicator from "../components/indicator/green";
-import { FiPaperclip } from "react-icons/fi";
+
 function MainScreen() {
   const { Title, Text } = Typography;
-  const baseURL = "http://ai.choira.io/";
+  const baseURL = "http://ai.choira.io:5000/";
 
-  const [audioData, setAudioData] = useState([
-  ])
-  const [currentAudio, setCurrentAudio] = useState({ output_filename:'', audioID: 0, progress:0, showWave: false })
-  const [localID, setLocalID] = useState(0)
-  const [localText, setLocalText] = useState({text:'',img:''})
-useEffect(() => {
-console.log("currentAudio changed----------------------------------------------------------------", currentAudio)
-}, [currentAudio])
+  const [audioData, setAudioData] = useState([]);
+  const [currentAudio, setCurrentAudio] = useState({
+    output_filename: "",
+    audioID: 0,
+    progress: 0,
+    showWave: false,
+  });
+  const [localID, setLocalID] = useState(0);
+  const [localText, setLocalText] = useState({ text: "", img: "" });
+
   const list = [
     {
       img: ava1,
@@ -209,7 +210,6 @@ console.log("currentAudio changed-----------------------------------------------
     labelCol: {
       span: 8,
       offset: 8,
-
     },
     wrapperCol: {
       span: 12,
@@ -228,12 +228,11 @@ console.log("currentAudio changed-----------------------------------------------
   };
 
   var dateOptions = {
-    month: 'short',
-    day  : '2-digit',
+    month: "short",
+    day: "2-digit",
     // hour : '2-digit',
     // minute:'2-digit'
   };
-
 
   const onChange = (e) => console.log(`radio checked:${e.target.value}`);
 
@@ -530,24 +529,24 @@ console.log("currentAudio changed-----------------------------------------------
 
   const onChangeCreative = (newValue) => {
     setCreativeValue(newValue);
-  }
+  };
 
   const success = () => {
     messageApi.open({
-      type: 'success',
-      content: 'This is a success message',
+      type: "success",
+      content: "This is a success message",
     });
   };
   const error = () => {
     messageApi.open({
-      type: 'error',
-      content: 'This is an error message',
+      type: "error",
+      content: "This is an error message",
     });
   };
   const warning = () => {
     messageApi.open({
-      type: 'warning',
-      content: 'This is a warning message',
+      type: "warning",
+      content: "This is a warning message",
     });
   };
 
@@ -557,7 +556,7 @@ console.log("currentAudio changed-----------------------------------------------
       .then((response) => {
         if (response.status) {
           const { url } = response.data[0];
-          console.log("Music----",url.replace(" ", "+"));
+          console.log("Music----", url.replace(" ", "+"));
           setCurrentAudio((prevState) => ({
             ...prevState,
             output_filename: url.replace(" ", "+"),
@@ -570,135 +569,125 @@ console.log("currentAudio changed-----------------------------------------------
         console.error(error);
       });
   };
-  
 
   const onFinish = (values) => {
     console.log("target", values);
-    const randomId = Math.floor(Math.random() * 1000)
-    setLocalID(randomId)
-    
-    setLocalText((prevState) => ({ ...prevState, text: values?.text }));
+    const randomId = Math.floor(Math.random() * 1000);
+    setLocalID(randomId);
+
+    // setLocalText((prevState) => ({ ...prevState, text: values?.text }));
     const data = {
       duration: values?.duration || 30,
       cfg_coef: values?.cfg_coef || 7,
       text: values?.text,
       model: "large",
-      temperature:1,
+      temperature: 1,
       segments: 1,
-      overlap:4.5,
+      overlap: 4.5,
       topk: 0,
       topp: 0,
       audioID: randomId,
-    }
-    console.log('Received values of form: ', data);
-    if(values.method) {
-      onSampleFinish(values, randomId)
-      
+    };
+    console.log("Received values of form: ", data);
+    if (values.method) {
+      onSampleFinish(values, randomId);
     } else {
-    // AI Generator
-    console.log("Generating using AI");
-    // axios.post(`http://ai.choira.io:5000/`,{
-    //   data:data
-    // }).then((audioResp)=>{
-    //     console.log("Resp Submitted ", audioResp)
-    //     message.loading(`Audio generation in progress...`)
-    //     // setTimeout(messageApi.destroy, 10000);
-    // });
-    message.loading(`Audio generation in progress...`,0);
-    axios.get(`http://10.137.51.184:3003/server/v1/voice/voiceLink`).then((audioResp)=>{
-      console.log("Resp Submitted ", audioResp)
-      // message.loading(`Audio generation in progress...`)
-      message.destroy();
-      message.success(`Audio generation completed`)
-      // let data =currentAudio
-      // data.output_filename = audioResp.audio_url
-      console.log(audioResp.data.audio_url,"audioResp.audio_urlaudioResp.audio_urlaudioResp.audio_urlaudioResp.audio_url")
-      setCurrentAudio((prevState) => ({
-        ...prevState,
-        output_filename: audioResp.data.audio_url,
-        audioID: randomId,
-      }));
-      // setTimeout(messageApi.destroy, 10000);
-  });
+      // AI Generator
+      console.log("Generating using AI");
+      axios
+        .post(`http://ai.choira.io:5000/`, {
+          data: data,
+        })
+        .then((audioResp) => {
+          console.log("Resp Submitted ", audioResp);
+          message.loading(`Audio generation in progress...`);
+          // setTimeout(messageApi.destroy, 10000);
+        });
     }
-
     // IMG Generator
-    const apiKey = 'DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA';
-    const textUrl = values?.text.substring(0,50);
+    const apiKey = "DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA";
+    const textUrl = values?.text.substring(0, 50);
+    console.log("textUrl", textUrl);
     const formData = new FormData();
-    formData.append('q', textUrl);
-    formData.append('YOUR_API_KEY', apiKey);
+    formData.append("q", textUrl);
+    formData.append("YOUR_API_KEY", apiKey);
 
-    axios.get(`https://api.giphy.com/v1/gifs/search?api_key=DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA&q=${textUrl}&limit=25&offset=0&rating=g&lang=en`
-    // , formData, 
-    // {
-    //   headers: {
-    //     'api-key': apiKey,
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // }
-    ).then((imgData)=>{
-        console.log("imgData Submitted ", imgData.data.data[0]?.images)
+    axios
+      .get(
+        `https://api.giphy.com/v1/gifs/search?api_key=DW7a71BLsHHon1Q6oYe5vrY7jHqp1dIA&q=${textUrl}&limit=25&offset=0&rating=g&lang=en`
+        // , formData,
+        // {
+        //   headers: {
+        //     'api-key': apiKey,
+        //     'Content-Type': 'multipart/form-data',
+        //   },
+        // }
+      )
+      .then((imgData) => {
+        console.log("imgData Submitted ", imgData.data.data[0]?.images);
         // console.log("imgData Submitted ", imgData.data.data[0].images)
-        if(imgData.data.data[0]?.images) setLocalText((prevState) => ({ ...prevState, img: imgData.data.data[0].images.original.url }))
-    });
-    
-  }
+        if (imgData.data.data[0]?.images)
+          setLocalText((prevState) => ({
+            ...prevState,
+            img: imgData.data.data[0].images.original.url,
+          }));
+      });
+  };
 
   useEffect(() => {
-    console.log(socket?.id)
-    socket.on('connect',()=>{
+    socket.on("connect", () => {
       console.log("Connected to server");
-    })
-    socket.on('disconect',()=>{
-      console.log("Disconnected to server");  
-      message.error(`refresh page!`)
-    })
-    socket.on('music_generated',(data)=>{
-      
-      console.log("New file created",data);
+    });
+    socket.on("disconect", () => {
+      console.log("Disconnected to server");
+      message.error(`refresh page!`);
+    });
+    socket.on("new_file", (data) => {
+      console.log("New file created", data);
       // setCurrentAudio(data)
       setCurrentAudio((prevState) => ({
         ...prevState,
-        audioID: data.file_name,
-        output_filename: `https://pipeline.choira.io/api/audio/${data.file_name}`,
+        audioID: data.audioID,
+        output_filename: `http://ai.choira.io:5000/static/audio/${data.output_filename}`,
       }));
       // setCurrentAudio(prevState => ({ ...prevState, showWave: false }));
       // message.success(`${data.output_filename} generated!`)
-      // setTimeout(messageApi.destroy, 1000);    
-    })
+      // setTimeout(messageApi.destroy, 1000);
+    });
 
-    socket.on('music-progress',(data)=>{
-      // const {generated_tokens, tokens_to_generate} = data
-      const {progress} = data
-      // const progressState = generated_tokens/tokens_to_generate*100
-      const progressState = progress
-      currentAudio.progress = progress
+    socket.on("progress", (data) => {
+      const { generated_tokens, tokens_to_generate } = data;
+      const progressState = (generated_tokens / tokens_to_generate) * 100;
+      currentAudio.progress = progressState;
       // setCurrentAudio(currentAudio.toFixed(2))
-      setCurrentAudio(prevState => ({ ...prevState, progress: Math.trunc(progressState) }))
+      setCurrentAudio((prevState) => ({
+        ...prevState,
+        progress: Math.trunc(progressState),
+      }));
       // console.log("progressState:", currentAudio.progress,"%");
-    })
+    });
 
     socket.on("connect_error", (err) => {
       console.log(`connect_error due to ${err.message}`);
     });
-
-  }, [])
+  }, []);
 
   useEffect(() => {
     console.log("audioData", audioData);
-    if(!audioData.length){
-      axios.get(`https://pipeline.choira.io/api/audio-files`).then((audioResp)=>{
-        console.log("audioResp", audioResp.data);
-        // const sortedAudioFiles =  audioResp.data.generations.sort((a, b) => b.timestamp - a.timestamp);
-        const sortedAudioFiles =  audioResp.data.generations.reverse()
-        // console.log("sortedAudioFiles", sortedAudioFiles);
-        setAudioData(sortedAudioFiles)
-      });
+    if (!audioData.length) {
+      axios
+        .get(`http://ai.choira.io:5000/api/audio-files`)
+        .then((audioResp) => {
+          console.log("audioResp", audioResp.data);
+          const sortedAudioFiles = audioResp.data.sort(
+            (a, b) => b.timestamp - a.timestamp
+          );
+          // console.log("sortedAudioFiles", sortedAudioFiles);
+          setAudioData(sortedAudioFiles);
+        });
     }
+  }, [audioData.length]);
 
-  }, [audioData.length])
-  
   // socket.on('connect',()=>{
   //   console.log("out Connected to server");
   // })
@@ -712,12 +701,12 @@ console.log("currentAudio changed-----------------------------------------------
 
   return (
     <>
-
       <div className="layout-content">
-
-
-      <Row className="mb-24" style={{display:'flex',justifyContent:'space-evenly'}} >
-        {/* <Col xs={24} md={12} sm={24} lg={12} xl={14} > */}
+        <Row
+          className="mb-24"
+          style={{ display: "flex", justifyContent: "space-evenly" }}
+        >
+          {/* <Col xs={24} md={12} sm={24} lg={12} xl={14} > */}
           <Card bordered={false} className="criclebox h-full">
             <Row gutter>
               <Col
@@ -727,152 +716,152 @@ console.log("currentAudio changed-----------------------------------------------
                 lg={12}
                 xl={14}
                 className="mobile-24"
-                style={{display:'flex',justifyContent:'space-around'}}
+                style={{ display: "flex", justifyContent: "space-around" }}
               >
-                <div className="h-full col-content p-20" style={{display:'flex',justifyContent:'space-evenly'}}>
+                <div
+                  className="h-full col-content p-20"
+                  style={{ display: "flex", justifyContent: "space-evenly" }}
+                >
                   <div className="ant-muse">
                     {/* <Text>Choira</Text> */}
-                    {/* <Title level={5}>OASIS </Title> */}
-
-                    <BeatingIndicator title={"OASIS"}/>
+                    <Title level={5}>OASIS </Title>
                     <Paragraph className="lastweek mb-36">
-                    Our Al music generator is based on artistic intelligence and will help you to create amazing and the most unique
-                    music track very easily from your text description.
-                    
+                      Our AI music generator is based on artistic intelligence
+                      and will help you to create amazing and the most unique
+                      music track very easily from your text description.
                     </Paragraph>
 
                     <Form
-                                        name="validate_other"
-                                        {...formItemLayout}
-                                        onFinish={onFinish}
-                                        initialValues={{
-                                          "input-number": 3,
-                                          "checkbox-group": ["A", "B"],
-                                          rate: 3.5,
-                                          duration: 30,
-                                          method: true,
-                                          cfg_coef: 7,
-                                        }}
-                                        style={{
-                                          maxWidth: "100%",
-                                          minWidth: "100%",
-                                          width: "100%",
-                                          // border: "1px solid red",
-                                        }}
-                                      >
-                                        <Form.Item
-                                          className="formLabel"
-                                          name="text"
-                                          rules={[
-                                            {
-                                              required: true,
-                                              message:
-                                                "Write a song description here to create your project",
-                                            },
-                                          ]}
-                                        >
-                                          <Input.TextArea
-                                            placeholder="Give a prompt or add lyrics.."
-                                            maxLength={400}
-                                            autoSize={{ minRows: 4 }}
-                                            style={{
-                                              background: "#262727",
-                                              border:"2px solid #444444",
-                                              position: "relative",
-                                              paddingBottom: "50px",
-                                              borderRadius: "10px",
-                  
-                                              color: "#F5F5F5",
-                                            }}
-                                          />
-                                        </Form.Item>
-                                        <div style={{ display: "flex", justifyContent: "flex-start",gap: "13px",position:"absolute", bottom: "28%", left: "6%" }}>
-                                        <input type="file" name="file" id="file" style={{display:"none"}} />
-                                        <label htmlFor="file" style={{cursor:"pointer", fontSize:"1.2rem", color:"#F5F5F5", padding: "7px", border:"2px solid #444444", borderRadius: "10px", background: "#262727",  height:"fit-content", display:"flex", alignItems:"center", }}>
-                                        <FiPaperclip />
-                                        </label>
-                                        <Form.Item
-                                          className="formLabel"
-                                          name="method"
-                                          // label="Generation"
-                                        >
-                                          <select
-                                            name="method"
-                                            id="method"
-                                            style={{
-                                              // width: "fit-content",
-                                              borderRadius: "10px",
-                                              outline: "none",
-                                              padding: "5px",
-                                              background: "#262727",
-                                              color: "#F5F5F5",
-                                            }}
-                                          >
-                                            <option value="completeSong">Complete Song</option>
-                                            <option value="backgroundMusic">
-                                              Background Music
-                                            </option>
-                                          </select>
-                                        </Form.Item>
-                  
-                  
-                                        
-                                        </div>
-                  
-                                      
-                  
-                                        {/* <Form.Item
-                                            name="agreement"
-                                            valuePropName="checked"
-                                            rules={[
-                                              {
-                                                validator: (_, value) =>
-                                                  value ? Promise.resolve() : Promise.reject(new Error('Should accept agreement')),
-                                              },
-                                            ]}
-                                            {...tailFormItemLayout}
-                                          >
-                                            <Checkbox>
-                                              I have read the <a href="">agreement</a>
-                                            </Checkbox>
-                                          </Form.Item> */}
-                  
-                                        <Form.Item {...formItemLayout}>
-                                          <Space
-                                            span={0}
-                                            direction="horizontal"
-                                            style={{ display: "flex" }}
-                                          >
-                                            <Button
-                                              type="primary"
-                                              name="AI"
-                                              htmlType="submit"
-                                              style={{
-                                                background: "#262727",
-                                                // borderColor: "#faad14",
-                                                border:"none",
-                                                
-                                              }}
-                                            >
-                                              <span
-                                                style={{
-                                                  color: "#ffc701",
-                                                  fontWeight: 700,
-                                                  fontSize: 20,
-                                                }}
-                                              >
-                                                Generate ✨ 
-                                              </span>
-                                            </Button>
-                                          </Space>
-                                        </Form.Item>
-                                        {/* <Form.Item {...tailFormItemLayout}>
-                                            <Button type="primary" htmlType="submit" style={{background:'#faad14', borderColor: '#faad14'}}>
-                                            <span style={{color:"white",fontWeight:700,fontSize:20}}>Create 🚀</span>
-                                            </Button>
-                                          </Form.Item> */}
-                                      </Form>
+                      name="validate_other"
+                      {...formItemLayout}
+                      onFinish={onFinish}
+                      initialValues={{
+                        "input-number": 3,
+                        "checkbox-group": ["A", "B"],
+                        rate: 3.5,
+                        duration: 30,
+                        method: true,
+                        cfg_coef: 7,
+                      }}
+                      style={{
+                        maxWidth: "100%",
+                        minWidth: "100%",
+                        width: "100%",
+                        // border: "1px solid red",
+                      }}
+                    >
+                      <Form.Item
+                        className="formLabel"
+                        name="text"
+                        rules={[
+                          {
+                            required: true,
+                            message:
+                              "Write a song description here to create your project",
+                          },
+                        ]}
+                      >
+                        <Input.TextArea
+                          placeholder="Give a prompt or add lyrics.."
+                          maxLength={400}
+                          autoSize={{ minRows: 4 }}
+                          style={{
+                            background: "#262727",
+                            border:"2px solid #444444",
+                            position: "relative",
+                            paddingBottom: "50px",
+                            borderRadius: "10px",
+
+                            color: "#F5F5F5",
+                          }}
+                        />
+                      </Form.Item>
+                      <div style={{ display: "flex", justifyContent: "flex-start",gap: "13px",position:"absolute", bottom: "28%", left: "6%" }}>
+                      <input type="file" name="file" id="file" style={{display:"none"}} />
+                      <label htmlFor="file" style={{cursor:"pointer", fontSize:"1.2rem", color:"#F5F5F5", padding: "7px", border:"2px solid #444444", borderRadius: "10px", background: "#262727",  height:"fit-content", display:"flex", alignItems:"center", }}>
+                      <FiPaperclip />
+                      </label>
+                      <Form.Item
+                        className="formLabel"
+                        name="method"
+                        // label="Generation"
+                      >
+                        <select
+                          name="method"
+                          id="method"
+                          style={{
+                            // width: "fit-content",
+                            borderRadius: "10px",
+                            outline: "none",
+                            padding: "5px",
+                            background: "#262727",
+                            color: "#F5F5F5",
+                          }}
+                        >
+                          <option value="completeSong">Complete Song</option>
+                          <option value="backgroundMusic">
+                            Background Music
+                          </option>
+                        </select>
+                      </Form.Item>
+
+
+                      
+                      </div>
+
                     
+
+                      {/* <Form.Item
+                          name="agreement"
+                          valuePropName="checked"
+                          rules={[
+                            {
+                              validator: (_, value) =>
+                                value ? Promise.resolve() : Promise.reject(new Error('Should accept agreement')),
+                            },
+                          ]}
+                          {...tailFormItemLayout}
+                        >
+                          <Checkbox>
+                            I have read the <a href="">agreement</a>
+                          </Checkbox>
+                        </Form.Item> */}
+
+                      <Form.Item {...formItemLayout}>
+                        <Space
+                          span={0}
+                          direction="horizontal"
+                          style={{ display: "flex" }}
+                        >
+                          <Button
+                            type="primary"
+                            name="AI"
+                            htmlType="submit"
+                            style={{
+                              background: "#262727",
+                              // borderColor: "#faad14",
+                              border:"none",
+                              
+                            }}
+                          >
+                            <span
+                              style={{
+                                color: "#ffc701",
+                                fontWeight: 700,
+                                fontSize: 20,
+                              }}
+                            >
+                              Generate ✨ 
+                            </span>
+                          </Button>
+                        </Space>
+                      </Form.Item>
+                      {/* <Form.Item {...tailFormItemLayout}>
+                          <Button type="primary" htmlType="submit" style={{background:'#faad14', borderColor: '#faad14'}}>
+                          <span style={{color:"white",fontWeight:700,fontSize:20}}>Create 🚀</span>
+                          </Button>
+                        </Form.Item> */}
+                    </Form>
                   </div>
                   {/* <div className="card-footer">
                     <a className="icon-move-right" href="#pablo">
@@ -882,47 +871,54 @@ console.log("currentAudio changed-----------------------------------------------
                   </div> */}
                 </div>
               </Col>
-              <Col
-                xs={24}
-                md={12}
-                sm={24}
-                lg={12}
-                xl={10}
-                className="mainImg"
-              >
+              <Col xs={24} md={12} sm={24} lg={12} xl={10} className="mainImg">
                 <div className="image-container ant-cret text-right ">
-                  <img src={localText.img.length? localText.img: card} alt="" className="image  border10" /> 
+                  <img
+                    src={localText.img.length ? localText.img : card}
+                    alt=""
+                    className="image  border10"
+                  />
                   {/* // artWork */}
                   {/* <Progress percent={currentAudio.progress} status="active" /> */}
                   <div className="overlay">
                     {/* <Waveform audio={`http://127.0.0.1:5000/static/audio/A rising synth.wav`} /> */}
                     {/* <Progress percent={70} status="active" /> */}
-                    {/* //currentAudio.output_filename.length && localID === currentAudio.audioID */}
-                    {(currentAudio?.output_filename?.length && localID === currentAudio?.audioID ) ? (
 
+                    {currentAudio.output_filename.length &&
+                    localID === currentAudio.audioID ? (
                       <>
-                        <Waveform promt_gen={"genai"} playAudio={true} audio={currentAudio.output_filename} />
-                        {/* <Button type="primary" icon={<DownloadOutlined />} size="default">
+                        <Waveform
+                          playAudio={true}
+                          audio={currentAudio.output_filename}
+                        />
+                        <Button
+                          type="primary"
+                          icon={<DownloadOutlined />}
+                          size="default"
+                        >
                           <a href={currentAudio.output_filename} download />
-                        </Button> */}
+                        </Button>
                       </>
                     ) : (
                       currentAudio.progress > 0 && (
-                        <Progress percent={currentAudio.progress} status="active" size="large" style={{ textColor: "#FCC200" }} />
+                        <Progress
+                          percent={currentAudio.progress}
+                          status="active"
+                          size="large"
+                          style={{ textColor: "#FCC200" }}
+                        />
                       )
                     )}
-
                   </div>
-                  </div>
+                </div>
               </Col>
             </Row>
           </Card>
-        {/* </Col> */}
+          {/* </Col> */}
+        </Row>
 
-      </Row>
-
-      <Row gutter={[24, 0]} >
-          <Col span={24} className="mb-24 " >
+        <Row gutter={[24, 0]}>
+          <Col span={24} className="mb-24">
             <Card bordered={false} className="criclebox cardbody h-full">
               <div className="project-ant">
                 <div>
@@ -954,24 +950,30 @@ console.log("currentAudio changed-----------------------------------------------
                     </tr>
                   </thead>
                   <tbody>
-                    
                     {audioData.map((d, index) => (
                       <tr key={index}>
-                        {/* <td>{d.text.replace(".wav", "").replace("(1)", "")}</td> */}
-                        <td>{d.user_prompt}</td>
+                        <td>{d.text.replace(".wav", "").replace("(1)", "")}</td>
                         <td>
-                        <span className="text-xs font-weight-bold">
-                          <Waveform audio={`https://pipeline.choira.io/api/audio/${d.filename}`} playAudio={false} />
-                          {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io/static/audio/${d.audio_file}`} /> */}
-                          {/* <audio id="audio_tag" src={`http://127.0.0.1:5000/static/audio/${d.audio_file}`} controls /> */}
-                        </span>
+                          <span className="text-xs font-weight-bold">
+                            <Waveform
+                              audio={`http://ai.choira.io:5000/static/audio/${d.audio_file}`}
+                              playAudio={false}
+                            />
+                            {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`http://ai.choira.io:5000/static/audio/${d.audio_file}`} /> */}
+                            {/* <audio id="audio_tag" src={`http://127.0.0.1:5000/static/audio/${d.audio_file}`} controls /> */}
+                          </span>
                         </td>
                         <td>
-                        {/* <Button type="primary" icon={<DownloadOutlined />} size={"default"} href={`https://pipeline.choira.io/static/audio/${d.audio_file}`} /> */}
+                          <Button
+                            type="primary"
+                            icon={<DownloadOutlined />}
+                            size={"default"}
+                            href={`http://ai.choira.io:5000/static/audio/${d.audio_file}`}
+                          />
                           {/* {`${new Date(d.timestamp).toLocaleDateString(undefined, {month: "short", day: "numeric"})} ${new Date(d.timestamp).toLocaleTimeString()}`} */}
                           {/* { new Date(d.timestamp).toLocaleString('en-us',dateOptions) } */}
                         </td>
-                        
+
                         {/* <td>
                           <h6>
                             <img
@@ -993,44 +995,6 @@ console.log("currentAudio changed-----------------------------------------------
                         </td> */}
                       </tr>
                     ))}
-
-                    <tr key={"0001"}>
-                      <td>80s electronic track with melodic synthesizers, catchy beat and groovy bass</td>
-                      <td>
-                      <span className="text-xs font-weight-bold">
-                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen1.wav'} playAudio={false} />
-                      </span>
-                      </td>
-                    </tr>
-                    <tr key={"0002"}>
-                      <td>A grand orchestral arrangement with thunderous percussion, epic brass fanfares, and soaring strings, creating a cinematic atmosphere fit for a heroic battle</td>
-                      <td>
-                      <span className="text-xs font-weight-bold">
-                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen2.wav'} playAudio={false} />
-                      </span>
-                      </td>
-                    </tr><tr key={"0003"}>
-                      <td>A light and cheerly EDM track, with syncopated drums, aery pads, and strong emotions</td>
-                      <td>
-                      <span className="text-xs font-weight-bold">
-                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen3.wav'} playAudio={false} />
-                      </span>
-                      </td>
-                    </tr><tr key={"0004"}>
-                      <td>Classic reggae track with an electronic guitar solo</td>
-                      <td>
-                      <span className="text-xs font-weight-bold">
-                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen4.wav'} playAudio={false} />
-                      </span>
-                      </td>
-                    </tr><tr key={"0005"}>
-                      <td>Violins and synths that inspire awe at the finiteness of life and the universe.</td>
-                      <td>
-                      <span className="text-xs font-weight-bold">
-                        <Waveform audio={'https://ai.choira.io/music_examples/choiragen5.wav'} playAudio={false} />
-                      </span>
-                      </td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1047,7 +1011,7 @@ console.log("currentAudio changed-----------------------------------------------
               </div> */}
             </Card>
           </Col>
-      </Row>
+        </Row>
 
         {/* <Row className="rowgap-vbox" gutter={[24, 0]}>
           {count.map((c, index) => (
@@ -1209,9 +1173,13 @@ console.log("currentAudio changed-----------------------------------------------
                   <div className="h-full col-content p-20">
                     <div className="ant-muse">
                       <Text>Start with Choira</Text>
-                      <Title level={5}>Music Ecosystem for the Digital Age</Title>
+                      <Title level={5}>
+                        Music Ecosystem for the Digital Age
+                      </Title>
                       <Paragraph className="lastweek mb-36">
-                      complete ecosystem to empower you with tools to jam, produce and explore music, the last remaining magic in this world.✨
+                        complete ecosystem to empower you with tools to jam,
+                        produce and explore music, the last remaining magic in
+                        this world.✨
                       </Paragraph>
                     </div>
                     <div className="card-footer">
@@ -1244,13 +1212,15 @@ console.log("currentAudio changed-----------------------------------------------
                 <div className="card-content">
                   <Title level={5}>Book Studios in a BEAT</Title>
                   <p>
-                  Simple way to book & record your next hit!
-                  Be a part of an ever growing ecosystem of Music!
-                  Book Create Play!
+                    Simple way to book & record your next hit! Be a part of an
+                    ever growing ecosystem of Music! Book Create Play!
                   </p>
                 </div>
                 <div className="card-footer">
-                  <a className="icon-move-right" href="https://studio.choira.io/">
+                  <a
+                    className="icon-move-right"
+                    href="https://studio.choira.io/"
+                  >
                     Read More
                     <RightOutlined />
                   </a>
